@@ -24,3 +24,6 @@ hs_err_pid*
 
 #Java Keytool
 *.p12
+
+#Eclipse target directory
+target/
