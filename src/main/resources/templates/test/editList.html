@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="ISO-8859-1">
+		<title>Shopping List</title>
+	</head>
+
+	<body>
+		<h1>Shopping List</h1>
+		
+		<form method="Post" action="#" th:action="@{/editList}"
+		th:object="${list}">
+			<input type="hidden" name="id" th:value="${list.id}">
+			<p>List Name: <input type="text" name="name" th:field="*{name}"></p>
+			
+			<p><input type="submit" name="submit" value="Submit">
+		</form>
+		
+		<a th:href="@{/test/home}">Cancel</a>
+	</body>
+</html>

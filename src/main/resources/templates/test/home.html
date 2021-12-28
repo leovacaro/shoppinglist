@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org" 
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+	<head>
+		<meta charset="ISO-8859-1">
+		<title>Shopping List</title>
+	</head>
+
+	<body>
+		<br>
+		<h1>Shopping List</h1>
+
+		<table>
+			<tr>
+				<th>Name</th>
+				<th></th>
+				<th></th>
+				<th></th>
+			</tr>
+			
+			<tr th:each="iLists:${lists}">
+				<td th:text="${iLists.name}"></td>
+				<td><a th:href="@{/editList/}+${iLists.id}">Edit</a></td>
+				<td><a th:href="@{/deleteList/}+${iLists.id}">Delete</a></td>
+				<td><a th:href="@{/productsList/}+${iLists.id}">Products</a></td>
+			</tr>
+		</table>
+		
+		<a href="/createList">Create a new list</a>
+		
+		<div th:fragment="logout" class="logout" 
+			sec:authorize="isAuthenticated()">
+			<div>
+				<form action="#" th:action="@{/logout}" method="post">
+					<input type="submit" name="submit" value="Logout">
+				</form>
+			</div>
+		</div>
+	</body>
+</html>
