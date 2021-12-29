@@ -16,6 +16,7 @@ import ca.leonardo.shoppinglist.beans.User;
 import ca.leonardo.shoppinglist.dao.ShoppingItemDao;
 import ca.leonardo.shoppinglist.dao.ShoppingListDao;
 import ca.leonardo.shoppinglist.dao.UserDao;
+import ca.leonardo.shoppinglist.service.ShoppingListService;
 import ca.leonardo.shoppinglist.service.UserService;
 import ca.leonardo.shoppinglist.beans.ShoppingItem;
 import ca.leonardo.shoppinglist.beans.ShoppingList;
@@ -27,11 +28,8 @@ public class MainController {
 	private UserService userService;
 
 	@Autowired
-	private ShoppingListDao shoppingListDao;
+	private ShoppingListService shoppingListService;
 	
-	@Autowired
-	private ShoppingItemDao shoppingItemDao;
-		
 	@GetMapping("/")
 	public String index() {
 		return "index.html";
@@ -60,7 +58,7 @@ public class MainController {
 		//Get the authenticated username
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String currentPrincipalName = authentication.getName();
-		List<ShoppingList> lists = shoppingListDao.findByUsername(currentPrincipalName);
+		List<ShoppingList> lists = shoppingListService.findListByUsername(currentPrincipalName);
 		model.addAttribute("lists", lists);
 		return "/test/home.html";
 	}
@@ -75,32 +73,32 @@ public class MainController {
 	public String createList(@ModelAttribute ShoppingList list, Model model) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String currentPrincipalName = authentication.getName();
-		shoppingListDao.add(list, currentPrincipalName);
+		shoppingListService.addList(list, currentPrincipalName);
 		return databaseList(model);
 	}
 	
 	@GetMapping("/editList/{id}")
 	public String updateListForm(Model model, @PathVariable("id") int id) {
-		ShoppingList list = shoppingListDao.findById(id);
+		ShoppingList list = shoppingListService.findListById(id);
 		model.addAttribute("list", list);
 		return "/test/editList.html";
 	}
 	
 	@PostMapping("/editList")
 	public String updateList(@ModelAttribute ShoppingList list, Model model) {
-		shoppingListDao.update(list);
+		shoppingListService.updateList(list);
 		return databaseList(model);
 	}
 	
 	@GetMapping("/deleteList/{id}")
 	public String deleteListById(Model model, @PathVariable("id") int id) {
-		shoppingListDao.deleteById(id);
+		shoppingListService.deleteListById(id);
 		return databaseList(model);
 	}
 	
 	@GetMapping("/productsList/{listId}")
 	public String itensList(Model model, @PathVariable("listId") int listId) {
-		List<ShoppingItem> itens = shoppingItemDao.findByListId(listId);
+		List<ShoppingItem> itens = shoppingListService.findItemByListId(listId);
 		model.addAttribute("itens", itens);
 		model.addAttribute("listId", listId);
 		return "/test/productsList.html";
@@ -116,27 +114,27 @@ public class MainController {
 	
 	@PostMapping("/newItem")
 	public String newItem(@ModelAttribute ShoppingItem item, Model model) {
-		shoppingItemDao.add(item);
+		shoppingListService.addItem(item);
 		return itensList(model, item.getListId());
 	}
 	
 	@GetMapping("/deleteItem/{itemId}")
 	public String deleteItemById(Model model, @PathVariable("itemId") int itemId) {
-		ShoppingItem item = shoppingItemDao.findById(itemId);
-		shoppingItemDao.deleteById(itemId);
+		ShoppingItem item = shoppingListService.findItemById(itemId);
+		shoppingListService.deleteItemById(itemId);
 		return itensList(model, item.getListId());
 	}
 	
 	@GetMapping("/editItem/{itemId}")
 	public String updateItemForm(Model model, @PathVariable("itemId") int itemId) {
-		ShoppingItem item = shoppingItemDao.findById(itemId);
+		ShoppingItem item = shoppingListService.findItemById(itemId);
 		model.addAttribute("item", item);
 		return "/test/editItem.html";
 	}
 	
 	@PostMapping("/editItem")
 	public String updateItem(@ModelAttribute ShoppingItem item, Model model) {
-		shoppingItemDao.update(item);
+		shoppingListService.updateItem(item);
 		return itensList(model, item.getListId());
 	}	
 }
