@@ -16,15 +16,16 @@ import ca.leonardo.shoppinglist.beans.User;
 import ca.leonardo.shoppinglist.dao.ShoppingItemDao;
 import ca.leonardo.shoppinglist.dao.ShoppingListDao;
 import ca.leonardo.shoppinglist.dao.UserDao;
+import ca.leonardo.shoppinglist.service.UserService;
 import ca.leonardo.shoppinglist.beans.ShoppingItem;
 import ca.leonardo.shoppinglist.beans.ShoppingList;
 
 @Controller
 public class MainController {
-
-	@Autowired
-	private UserDao userDao;
 	
+	@Autowired
+	private UserService userService;
+
 	@Autowired
 	private ShoppingListDao shoppingListDao;
 	
@@ -49,8 +50,7 @@ public class MainController {
 	
 	@PostMapping("/createUser")
 	public String createUser(@ModelAttribute User user, Model model) {
-		userDao.add(user);
-		userDao.addAuthority(user.getUsername());
+		userService.add(user);
 		return "/test/home.html";
 	}
 	
