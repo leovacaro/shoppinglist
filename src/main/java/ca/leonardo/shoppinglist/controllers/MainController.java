@@ -13,15 +13,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import ca.leonardo.shoppinglist.beans.User;
+import ca.leonardo.shoppinglist.dao.ShoppingItemDao;
+import ca.leonardo.shoppinglist.dao.ShoppingListDao;
+import ca.leonardo.shoppinglist.dao.UserDao;
 import ca.leonardo.shoppinglist.beans.ShoppingItem;
 import ca.leonardo.shoppinglist.beans.ShoppingList;
-import ca.leonardo.shoppinglist.database.DatabaseAccess;
 
 @Controller
 public class MainController {
 
 	@Autowired
-	private DatabaseAccess da;
+	private UserDao userDao;
+	
+	@Autowired
+	private ShoppingListDao shoppingListDao;
+	
+	@Autowired
+	private ShoppingItemDao shoppingItemDao;
 		
 	@GetMapping("/")
 	public String index() {
@@ -41,8 +49,8 @@ public class MainController {
 	
 	@PostMapping("/createUser")
 	public String createUser(@ModelAttribute User user, Model model) {
-		da.addUser(user);
-		da.addAuthority(user.getUsername());
+		userDao.add(user);
+		userDao.addAuthority(user.getUsername());
 		return "/test/home.html";
 	}
 	
@@ -52,7 +60,7 @@ public class MainController {
 		//Get the authenticated username
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String currentPrincipalName = authentication.getName();
-		List<ShoppingList> lists = da.findListsByUsername(currentPrincipalName);
+		List<ShoppingList> lists = shoppingListDao.findByUsername(currentPrincipalName);
 		model.addAttribute("lists", lists);
 		return "/test/home.html";
 	}
@@ -67,32 +75,32 @@ public class MainController {
 	public String createList(@ModelAttribute ShoppingList list, Model model) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String currentPrincipalName = authentication.getName();
-		da.addList(list, currentPrincipalName);
+		shoppingListDao.add(list, currentPrincipalName);
 		return databaseList(model);
 	}
 	
 	@GetMapping("/editList/{id}")
 	public String updateListForm(Model model, @PathVariable("id") int id) {
-		ShoppingList list = da.findListById(id);
+		ShoppingList list = shoppingListDao.findById(id);
 		model.addAttribute("list", list);
 		return "/test/editList.html";
 	}
 	
 	@PostMapping("/editList")
 	public String updateList(@ModelAttribute ShoppingList list, Model model) {
-		da.updateList(list);
+		shoppingListDao.update(list);
 		return databaseList(model);
 	}
 	
 	@GetMapping("/deleteList/{id}")
 	public String deleteListById(Model model, @PathVariable("id") int id) {
-		da.deleteListById(id);
+		shoppingListDao.deleteById(id);
 		return databaseList(model);
 	}
 	
 	@GetMapping("/productsList/{listId}")
 	public String itensList(Model model, @PathVariable("listId") int listId) {
-		List<ShoppingItem> itens = da.findItensByListId(listId);
+		List<ShoppingItem> itens = shoppingItemDao.findByListId(listId);
 		model.addAttribute("itens", itens);
 		model.addAttribute("listId", listId);
 		return "/test/productsList.html";
@@ -108,29 +116,27 @@ public class MainController {
 	
 	@PostMapping("/newItem")
 	public String newItem(@ModelAttribute ShoppingItem item, Model model) {
-		da.addItem(item);
+		shoppingItemDao.add(item);
 		return itensList(model, item.getListId());
 	}
 	
 	@GetMapping("/deleteItem/{itemId}")
 	public String deleteItemById(Model model, @PathVariable("itemId") int itemId) {
-		ShoppingItem item = da.findItemById(itemId);
-		da.deleteItemById(itemId);
+		ShoppingItem item = shoppingItemDao.findById(itemId);
+		shoppingItemDao.deleteById(itemId);
 		return itensList(model, item.getListId());
 	}
 	
 	@GetMapping("/editItem/{itemId}")
 	public String updateItemForm(Model model, @PathVariable("itemId") int itemId) {
-		ShoppingItem item = da.findItemById(itemId);
+		ShoppingItem item = shoppingItemDao.findById(itemId);
 		model.addAttribute("item", item);
 		return "/test/editItem.html";
 	}
 	
 	@PostMapping("/editItem")
 	public String updateItem(@ModelAttribute ShoppingItem item, Model model) {
-		da.updateItem(item);
+		shoppingItemDao.update(item);
 		return itensList(model, item.getListId());
-	}
-	
-	
+	}	
 }

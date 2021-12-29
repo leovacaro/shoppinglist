@@ -1,4 +1,4 @@
-package ca.leonardo.shoppinglist.database;
+package ca.leonardo.shoppinglist.dao.jdbc;
 
 import javax.sql.DataSource;
 
