@@ -1,9 +1,9 @@
 # shoppinglist
 Web application based on Java and Spring Boot for managing shopping lists.
 
-The goal of this project is to define a use case for applying all of the concepts that I have been learning at the College: software development, design patterns, database management, security, code quality, user experience.
+The goal of this project is to define a use case for applying the concepts that I have been learning in the Computer Programming course from Sheridan College: software development, design patterns, database management, security, code quality, user experience.
 
-Check the Wiki for detailed project specifications.
+Check the [Wiki](../../wiki) for detailed project specifications.
 
 ## Features
 * Users can self register in the application.
